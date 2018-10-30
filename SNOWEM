@@ -1,0 +1,21 @@
+Function Post-SNEvent($ServiceName){
+    $headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
+    $headers.Add("Accept", 'application/json')
+    $headers.Add("Authorization", (Get-Content $PSScriptRoot\authorizationkey))
+    $timestamp = $(get-date -f yyyyMMddHHmmss)
+    $node = "# System Name = DK"
+    
+    $json = @{source="Sensu";
+             "node"="undefined";
+             "metric_name"="Service is not running";
+             "type"="status";
+             "severity"="1";
+             "message_key"="ToTestCorrelation16";
+             "description"="Error";
+             "additional_info"="{""servicename"":""$ServiceName"",""computername"":""$env:COMPUTERNAME"",""timestamp"":""$timestamp"",""tsveCLUS"":""$node"",""tsveERRI"":""# Error ID = 10031 : One or more mdisks on controller are degraded""}"
+             } | ConvertTo-Json
+
+    write-host $json
+   # Invoke-RestMethod -Uri 'https://sandbox-servicenow.com/api/now/table/em_event' -Method Post -Body $json -ContentType "application/json" -Headers $headers 
+}
+Post-SNEvent("service1")
